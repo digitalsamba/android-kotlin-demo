@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Videoroom</title>
+    <script src="https://unpkg.com/@digitalsamba/embedded-sdk"></script>
+</head>
+
+
+<body>
+<div>
+    <div class="container">
+        <div class="room-content">
+            <div class="frame-area">
+                <div class="frame-parent" style="height: 100vh; width: 100vw">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script async defer>
+  let ROOM_URL = "https://localhostl:3000/Public";
+
+
+  // expose controller as a global variable so that it can be accessed from native app;
+  var sambaEmbedded;
+
+  function loadRoom() {
+    try {
+      const parent = document.querySelector(".frame-parent");
+      parent.innerHTML = null;
+
+      // create pre-configured controller instance using given URL;
+      // if no frame specified, this pre-creates a frame but doesn't load it yet;
+      // other init strategies are available, along with more detailed customization
+      // see https://docs.digitalsamba.com/reference/sdk/digitalsambaembedded-class
+
+      sambaEmbedded = DigitalSambaEmbedded.createControl(
+        { url: ROOM_URL, root: parent, roomSettings: { showToolbar: false } },
+        { reportErrors: true }
+      );
+
+      // controller instance exposes the frame, so we can customize it a little bit
+      sambaEmbedded.frame.style.width = "100%";
+      sambaEmbedded.frame.style.height = "100%";
+      sambaEmbedded.frame.style.border = "none";
+
+      sambaEmbedded.on('*', (payload) => {
+          if (window.Android) {
+           Android.receiveMessage(JSON.stringify(payload))
+        }
+      })
+
+      // load samba frame
+      sambaEmbedded.load();
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+    const params = new URLSearchParams(window.location.search);
+    const dynamicRoomUrl = params.get("roomUrl");
+
+    if (dynamicRoomUrl) {
+      ROOM_URL = dynamicRoomUrl;
+    }
+
+    loadRoom();
+</script>
+</body>
+</html>
+
