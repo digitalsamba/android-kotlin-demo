@@ -23,6 +23,7 @@ import android.Manifest;
 import android.widget.LinearLayout
 
 val PERMISSION_REQUEST_CODE = 1;
+val ROOM_URL = "https://localhost:3000/Public";
 
 private class LocalContentWebViewClient(private val assetLoader: WebViewAssetLoader) : WebViewClientCompat() {
     @RequiresApi(21)
@@ -41,7 +42,6 @@ private class LocalContentWebViewClient(private val assetLoader: WebViewAssetLoa
         return assetLoader.shouldInterceptRequest(Uri.parse(url))
     }
 }
-
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -88,7 +88,7 @@ class MainActivity : AppCompatActivity() {
 
             WebView.addJavascriptInterface(SDKMessage(), "Android")
 
-            WebView.loadUrl("https://appassets.androidplatform.net/assets/frame.html");
+            WebView.loadUrl("https://appassets.androidplatform.net/assets/frame.html?roomUrl=$ROOM_URL");
 
             toggleToolbarButton.setOnClickListener {
                 WebView.evaluateJavascript("sambaEmbedded.toggleToolbar()", {});
